@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Formulaire Projet Hypermedia</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+    form, .result {
+      border: 1px solid #ccc;
+      padding: 20px;
+      margin-bottom: 20px;
+      border-radius: 8px;
+    }
+    input, textarea {
+      width: 100%;
+      margin-bottom: 10px;
+      padding: 8px;
+    }
+    button {
+      padding: 10px 20px;
+      background: #007BFF;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .result h2 {
+      margin-top: 0;
+      color: #333;
+    }
+  </style>
+</head>
+<body>
+  <h1>Formulaire Projet Hypermedia</h1>
+
+  <form id="projectForm">
+    <label>Titre du projet :</label>
+    <input type="text" id="title" required>
+
+    <label>Description :</label>
+    <textarea id="description" rows="4" required></textarea>
+
+    <label>Auteurs :</label>
+    <input type="text" id="authors" required>
+
+    <label>Technologies utilisées :</label>
+    <input type="text" id="technologies" required>
+
+    <label>Date :</label>
+    <input type="date" id="date" required>
+
+    <label>Lien GitHub (optionnel) :</label>
+    <input type="url" id="github">
+
+    <button type="submit">Soumettre</button>
+  </form>
+
+  <div class="result" id="result" style="display:none;">
+    <h2>Résumé du projet</h2>
+    <p><strong>Titre :</strong> <span id="resTitle"></span></p>
+    <p><strong>Description :</strong> <span id="resDescription"></span></p>
+    <p><strong>Auteurs :</strong> <span id="resAuthors"></span></p>
+    <p><strong>Technologies :</strong> <span id="resTechnologies"></span></p>
+    <p><strong>Date :</strong> <span id="resDate"></span></p>
+    <p><strong>Lien GitHub :</strong> <a id="resGithub" href="#" target="_blank"></a></p>
+  </div>
+
+  <script>
+    const form = document.getElementById('projectForm');
+    const result = document.getElementById('result');
+
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      document.getElementById('resTitle').textContent = document.getElementById('title').value;
+      document.getElementById('resDescription').textContent = document.getElementById('description').value;
+      document.getElementById('resAuthors').textContent = document.getElementById('authors').value;
+      document.getElementById('resTechnologies').textContent = document.getElementById('technologies').value;
+      document.getElementById('resDate').textContent = document.getElementById('date').value;
+
+      const githubLink = document.getElementById('github').value;
+      if (githubLink) {
+        const link = document.getElementById('resGithub');
+        link.href = githubLink;
+        link.textContent = githubLink;
+      } else {
+        document.getElementById('resGithub').textContent = "Non fourni";
+        document.getElementById('resGithub').removeAttribute("href");
+      }
+
+      result.style.display = "block";
+    });
+  </script>
+</body>
+</html>
