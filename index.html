@@ -2,40 +2,22 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <title>Formulaire Projet Hypermedia</title>
+  <title>Projet Hypermedia</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 20px;
-    }
-    form, .result {
-      border: 1px solid #ccc;
-      padding: 20px;
-      margin-bottom: 20px;
-      border-radius: 8px;
-    }
-    input, textarea {
-      width: 100%;
-      margin-bottom: 10px;
-      padding: 8px;
-    }
-    button {
-      padding: 10px 20px;
-      background: #007BFF;
-      color: #fff;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-    }
-    .result h2 {
-      margin-top: 0;
-      color: #333;
-    }
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    form { border: 1px solid #ccc; padding: 20px; border-radius: 8px; margin-bottom: 20px; }
+    input, textarea { width: 100%; margin-bottom: 10px; padding: 8px; }
+    button { padding: 10px 20px; background: #007BFF; color: #fff; border: none; cursor: pointer; margin-right: 10px; }
+    button:hover { background: #0056b3; }
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    th, td { border: 1px solid #ccc; padding: 10px; text-align: left; }
+    th { background: #f1f1f1; }
   </style>
 </head>
 <body>
   <h1>Formulaire Projet Hypermedia</h1>
 
+  <!-- Formulaire -->
   <form id="projectForm">
     <label>Titre du projet :</label>
     <input type="text" id="title" required>
@@ -46,52 +28,90 @@
     <label>Auteurs :</label>
     <input type="text" id="authors" required>
 
-    <label>Technologies utilisées :</label>
+    <label>Technologies :</label>
     <input type="text" id="technologies" required>
 
     <label>Date :</label>
     <input type="date" id="date" required>
 
-    <label>Lien GitHub (optionnel) :</label>
+    <label>Lien GitHub :</label>
     <input type="url" id="github">
 
     <button type="submit">Soumettre</button>
+    <button type="button" id="loadFromUrl">Charger depuis l'URL</button>
   </form>
 
-  <div class="result" id="result" style="display:none;">
-    <h2>Résumé du projet</h2>
-    <p><strong>Titre :</strong> <span id="resTitle"></span></p>
-    <p><strong>Description :</strong> <span id="resDescription"></span></p>
-    <p><strong>Auteurs :</strong> <span id="resAuthors"></span></p>
-    <p><strong>Technologies :</strong> <span id="resTechnologies"></span></p>
-    <p><strong>Date :</strong> <span id="resDate"></span></p>
-    <p><strong>Lien GitHub :</strong> <a id="resGithub" href="#" target="_blank"></a></p>
-  </div>
+  <!-- Tableau toujours visible -->
+  <table id="dataTable">
+    <thead>
+      <tr>
+        <th>Titre</th>
+        <th>Description</th>
+        <th>Auteurs</th>
+        <th>Technologies</th>
+        <th>Date</th>
+        <th>Lien GitHub</th>
+      </tr>
+    </thead>
+    <tbody id="tableBody">
+      <!-- Les données apparaîtront ici -->
+    </tbody>
+  </table>
 
   <script>
     const form = document.getElementById('projectForm');
-    const result = document.getElementById('result');
+    const tbody = document.getElementById('tableBody');
+    const loadFromUrlBtn = document.getElementById('loadFromUrl');
 
+    // Fonction pour ajouter une ligne dans le tableau
+    function addRow(data) {
+      const row = document.createElement('tr');
+      row.innerHTML = `
+        <td>${data.title}</td>
+        <td>${data.description}</td>
+        <td>${data.authors}</td>
+        <td>${data.technologies}</td>
+        <td>${data.date}</td>
+        <td>${data.github ? `<a href="${data.github}" target="_blank">${data.github}</a>` : 'Non fourni'}</td>
+      `;
+      tbody.appendChild(row);
+    }
+
+    // Soumission du formulaire
     form.addEventListener('submit', function(e) {
       e.preventDefault();
 
-      document.getElementById('resTitle').textContent = document.getElementById('title').value;
-      document.getElementById('resDescription').textContent = document.getElementById('description').value;
-      document.getElementById('resAuthors').textContent = document.getElementById('authors').value;
-      document.getElementById('resTechnologies').textContent = document.getElementById('technologies').value;
-      document.getElementById('resDate').textContent = document.getElementById('date').value;
+      const data = {
+        title: document.getElementById('title').value,
+        description: document.getElementById('description').value,
+        authors: document.getElementById('authors').value,
+        technologies: document.getElementById('technologies').value,
+        date: document.getElementById('date').value,
+        github: document.getElementById('github').value
+      };
 
-      const githubLink = document.getElementById('github').value;
-      if (githubLink) {
-        const link = document.getElementById('resGithub');
-        link.href = githubLink;
-        link.textContent = githubLink;
-      } else {
-        document.getElementById('resGithub').textContent = "Non fourni";
-        document.getElementById('resGithub').removeAttribute("href");
+      addRow(data);
+      form.reset();
+    });
+
+    // Charger depuis l'URL
+    loadFromUrlBtn.addEventListener('click', function() {
+      const params = new URLSearchParams(window.location.search);
+      if (!params.has('title')) {
+        alert("Aucune donnée trouvée dans l'URL !");
+        return;
       }
 
-      result.style.display = "block";
+      const data = {
+        title: params.get('title') || '',
+        description: params.get('description') || '',
+        authors: params.get('authors') || '',
+        technologies: params.get('technologies') || '',
+        date: params.get('date') || '',
+        github: params.get('github') || ''
+      };
+
+      addRow(data);
     });
   </script>
 </body>
