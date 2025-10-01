@@ -2,117 +2,143 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <title>Projet Hypermedia</title>
+  <title>Master 2 THYP – Promo 2025-2026</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+  <!-- Bootstrap 5 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
   <style>
-    body { font-family: Arial, sans-serif; margin: 20px; }
-    form { border: 1px solid #ccc; padding: 20px; border-radius: 8px; margin-bottom: 20px; }
-    input, textarea { width: 100%; margin-bottom: 10px; padding: 8px; }
-    button { padding: 10px 20px; background: #007BFF; color: #fff; border: none; cursor: pointer; margin-right: 10px; }
-    button:hover { background: #0056b3; }
-    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-    th, td { border: 1px solid #ccc; padding: 10px; text-align: left; }
-    th { background: #f1f1f1; }
+    body {
+      background: #f9fafb;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    header {
+      background: linear-gradient(135deg, #3b82f6, #6366f1);
+      color: white;
+      padding: 3rem 1rem;
+      text-align: center;
+      border-bottom-left-radius: 2rem;
+      border-bottom-right-radius: 2rem;
+      margin-bottom: 2rem;
+    }
+    header h1 {
+      font-size: 2.5rem;
+      font-weight: bold;
+    }
+    header h2 {
+      font-size: 1.25rem;
+      opacity: 0.85;
+    }
+    .student-card {
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .student-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+    }
+    .student-photo {
+      border-radius: 1rem 1rem 0 0;
+      object-fit: cover;
+      height: 220px;
+      width: 100%;
+    }
+    .modal-content {
+      border-radius: 1rem;
+    }
   </style>
 </head>
 <body>
-  <h1>Formulaire Projet Hypermedia</h1>
 
-  <!-- Formulaire -->
-  <form id="projectForm">
-    <label>Titre du projet :</label>
-    <input type="text" id="title" required>
+<header>
+  <h1>Master 2 THYP</h1>
+  <h2>Promotion 2025 – 2026</h2>
+</header>
 
-    <label>Description :</label>
-    <textarea id="description" rows="4" required></textarea>
+<div class="container mb-5">
+  <div class="row g-4" id="etuCards">
+    <!-- Étudiants générés ici -->
+  </div>
+</div>
 
-    <label>Auteurs :</label>
-    <input type="text" id="authors" required>
+<!-- Modal -->
+<div class="modal fade" id="infosEtu" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title" id="modalEtuTitle">Informations Étudiant</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body" id="modalEtuBody">
+        <ul class="nav nav-tabs mb-3" id="myTab" role="tablist">
+          <li class="nav-item"><a class="nav-link active" id="profil-tab" data-bs-toggle="tab" href="#profil" role="tab">Profil</a></li>
+          <li class="nav-item"><a class="nav-link" id="competences-tab" data-bs-toggle="tab" href="#competences" role="tab">Compétences</a></li>
+          <li class="nav-item"><a class="nav-link" id="veille-tab" data-bs-toggle="tab" href="#veille" role="tab">Veilles</a></li>
+        </ul>
+        <div class="tab-content">
+          <div class="tab-pane fade show active" id="profil" role="tabpanel">Profil étudiant…</div>
+          <div class="tab-pane fade" id="competences" role="tabpanel">Graphiques compétences…</div>
+          <div class="tab-pane fade" id="veille" role="tabpanel">Veille, liens, ressources…</div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline-secondary" data-bs-dismiss="modal">Fermer</button>
+      </div>
+    </div>
+  </div>
+</div>
 
-    <label>Technologies :</label>
-    <input type="text" id="technologies" required>
+<script>
+  const url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTUFXMInGPyLiSOswMpHCzhrsKUHaRgZQrp7pEQQ8FPSgIL12YC5KLjkIpofeAL6UndiS4ulKX9GD12/pub?gid=1627457581&single=true&output=csv";
 
-    <label>Date :</label>
-    <input type="date" id="date" required>
+  d3.csv(url).then(data => {
+    console.log("Rows loaded:", data.length);
+    console.log(data);
 
-    <label>Lien GitHub :</label>
-    <input type="url" id="github">
+    const container = d3.select("#etuCards");
+    container.selectAll(".col-md-4")
+      .data(data)
+      .enter()
+      .append("div")
+      .attr("class", "col-md-4")
+      .html(d => {
+        // get Google Drive photo link
+        let photoUrl = "";
+        if (d["Votre photo"]) {
+          try {
+            let url = new URL(d["Votre photo"]);
+            let params = new URLSearchParams(url.search);
+            let id = params.get("id");
+            if (id) photoUrl = "https://drive.google.com/thumbnail?id=" + id + "&sz=w1000";
+          } catch(e) {}
+        }
+        return `
+          <div class="card student-card h-100">
+            <img src="${photoUrl}" class="student-photo" alt="Photo ${d['Votre prénom']}">
+            <div class="card-body">
+              <h5 class="card-title">${d['Votre prénom']} ${d['Votre nom']}</h5>
+              <p class="card-text"><strong>Parcours:</strong> ${d['Dans quel parcours êtes vous inscris ?']}</p>
+              <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#infosEtu"
+                onclick="openModal('${d['Votre prénom']}','${d['Votre nom']}','${d['Votre compte GitHub']}')">
+                Voir plus
+              </button>
+            </div>
+          </div>
+        `;
+      });
+  });
 
-    <button type="submit">Soumettre</button>
-    <button type="button" id="loadFromUrl">Charger depuis l'URL</button>
-  </form>
+  function openModal(prenom, nom, github) {
+    document.getElementById("modalEtuTitle").innerText = `${prenom} ${nom}`;
+    document.getElementById("modalEtuBody").querySelector("#profil").innerHTML = `
+      <p><strong>GitHub:</strong> <a href="https://github.com/${github}" target="_blank">${github}</a></p>
+      <p><em>Infos détaillées ici…</em></p>
+    `;
+  }
+</script>
 
-  <!-- Tableau toujours visible -->
-  <table id="dataTable">
-    <thead>
-      <tr>
-        <th>Titre</th>
-        <th>Description</th>
-        <th>Auteurs</th>
-        <th>Technologies</th>
-        <th>Date</th>
-        <th>Lien GitHub</th>
-      </tr>
-    </thead>
-    <tbody id="tableBody">
-      <!-- Les données apparaîtront ici -->
-    </tbody>
-  </table>
-
-  <script>
-    const form = document.getElementById('projectForm');
-    const tbody = document.getElementById('tableBody');
-    const loadFromUrlBtn = document.getElementById('loadFromUrl');
-
-    // Fonction pour ajouter une ligne dans le tableau
-    function addRow(data) {
-      const row = document.createElement('tr');
-      row.innerHTML = `
-        <td>${data.title}</td>
-        <td>${data.description}</td>
-        <td>${data.authors}</td>
-        <td>${data.technologies}</td>
-        <td>${data.date}</td>
-        <td>${data.github ? `<a href="${data.github}" target="_blank">${data.github}</a>` : 'Non fourni'}</td>
-      `;
-      tbody.appendChild(row);
-    }
-
-    // Soumission du formulaire
-    form.addEventListener('submit', function(e) {
-      e.preventDefault();
-
-      const data = {
-        title: document.getElementById('title').value,
-        description: document.getElementById('description').value,
-        authors: document.getElementById('authors').value,
-        technologies: document.getElementById('technologies').value,
-        date: document.getElementById('date').value,
-        github: document.getElementById('github').value
-      };
-
-      addRow(data);
-      form.reset();
-    });
-
-    // Charger depuis l'URL
-    loadFromUrlBtn.addEventListener('click', function() {
-      const params = new URLSearchParams(window.location.search);
-      if (!params.has('title')) {
-        alert("Aucune donnée trouvée dans l'URL !");
-        return;
-      }
-
-      const data = {
-        title: params.get('title') || '',
-        description: params.get('description') || '',
-        authors: params.get('authors') || '',
-        technologies: params.get('technologies') || '',
-        date: params.get('date') || '',
-        github: params.get('github') || ''
-      };
-
-      addRow(data);
-    });
-  </script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
