@@ -18,7 +18,7 @@
     header {
       background: linear-gradient(135deg, #3b82f6, #6366f1);
       color: white;
-      padding: 3rem 1rem;
+      padding: 3rem 1rem 2rem;
       text-align: center;
       border-bottom-left-radius: 2rem;
       border-bottom-right-radius: 2rem;
@@ -31,6 +31,20 @@
     header h2 {
       font-size: 1.25rem;
       opacity: 0.85;
+      margin-bottom: 1.5rem;
+    }
+    .btn-formulaire {
+      background: #2563eb;
+      color: white;
+      font-weight: 500;
+      border-radius: 0.5rem;
+      padding: 0.6rem 1.2rem;
+      margin-bottom: 1.5rem;
+      transition: background 0.2s;
+    }
+    .btn-formulaire:hover {
+      background: #1e40af;
+      color: white;
     }
     .student-card {
       transition: transform 0.2s ease, box-shadow 0.2s ease;
@@ -53,6 +67,12 @@
 <body>
 
 <header>
+  <!-- Button to Google Form -->
+  <a href="https://docs.google.com/forms/d/e/1FAIpQLSfRpNY8b4at0EMbJprWR77k2_Ex-7OkUGZgr1LxKRIi7TE9ag/viewform?pli=1" 
+     target="_blank" class="btn btn-formulaire">
+     <span style="font-size:1.2rem; margin-right:4px;">>></span> Remplir le formulaire
+  </a>
+
   <h1>Master 2 THYP</h1>
   <h2>Promotion 2025 – 2026</h2>
 </header>
